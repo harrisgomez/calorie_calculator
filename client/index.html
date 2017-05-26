@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html ng-app='calcApp'>
+<html>
     <head>
         <meta charset="utf-8">
         <title>Calorie Calculator</title>
@@ -7,15 +7,70 @@
         <link rel="stylesheet" type='text/css' href="static/CSS/style.css">
         <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
 
-        <script type='text/javascript' src='angular/angular.js'></script> <!-- load angular before all components -->
-        <script type='text/javascript' src='assets/app.js'></script> <!-- load routing -->
-        <script type='text/javascript' src='angular-route/angular-route.js'></script> <!-- looks inside bower_components dir for angular-route -->
         <script src="https://code.jquery.com/jquery-3.2.1.min.js" integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4=" crossorigin="anonymous"></script>
 
-        <!-- load controllers -->
-        <script src="assets/controllers/calculator_controller.js" charset="utf-8"></script>
+        <script>
+            $(document).ready(function(){
+                $('#submit_food').submit(function(){
+                    var results = [];
+                    var userInput = $('#foods').val();
+
+                    getResults = function(userInput){
+                        var lines = userInput.split('\n'); // create separate searches for multi line inputs
+
+                        for(var i=0; i<lines.length; i++){
+                            var item = {};
+                            $.ajax({
+                                type: 'GET',
+                                async: true,
+                                url: 'https://api.nutritionix.com/v1_1/search/' + lines[i] + '?fields=item_name%2Citem_id%2Cbrand_name%2Cnf_calories%2Cnf_total_fat&appId=be442dad&appKey=8304222f1be7fb9964787d2fe2770630',
+                                success: function(data){
+                                    item.name = data.hits[0].fields.item_name;
+                                    item.calories = data.hits[0].fields.nf_calories;
+                                    results.push(item);
+                                }
+                            })
+                        }
+
+                        for(var i=0; i<results.length; i++){
+                            $('#results').append(
+                                '<tr><td>' + results[i].name + '</td><td>' + results[i].calories + '</td></tr>'
+                            )
+                        }
+                    }
+
+                    getResults(userInput);
+
+                })
+            })
+        </script>
+
     </head>
     <body>
-        <div ng-view style='border:1px solid black'></div>
+        <div class="container">
+
+            <div class="page-header">
+                <h1>Calorie Calculator</h1>
+            </div>
+
+            <div class="col-md-6">
+                <div class="form-group">
+                    <form id='submit_food'>
+                        <label for="foods">Enter the foods you have eaten today:</label>
+                        <textarea id='foods' class="form-control" rows="5">cheeseburger</textarea>
+                        <input type="submit" class="btn btn-primary" value='Add'>
+                    </form>
+                </div>
+            </div>
+
+            <div class="col-md-6">
+                <table id='results'>
+                    <tr>
+                        <td>Your food log contains:</td>
+                    </tr>
+                </table>
+            </div>
+
+        </div>
     </body>
 </html>
