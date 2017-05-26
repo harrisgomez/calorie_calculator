@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html ng-app='calcApp'>
+    <head>
+        <meta charset="utf-8">
+        <title>Calorie Calculator</title>
+
+        <link rel="stylesheet" type='text/css' href="static/CSS/style.css">
+        <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+
+        <script type='text/javascript' src='angular/angular.js'></script> <!-- load angular before all components -->
+        <script type='text/javascript' src='assets/app.js'></script> <!-- load routing -->
+        <script type='text/javascript' src='angular-route/angular-route.js'></script> <!-- looks inside bower_components dir for angular-route -->
+        <script src="https://code.jquery.com/jquery-3.2.1.min.js" integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4=" crossorigin="anonymous"></script>
+
+        <!-- load controllers -->
+        <script src="assets/controllers/calculator_controller.js" charset="utf-8"></script>
+    </head>
+    <body>
+        <div ng-view style='border:1px solid black'></div>
+    </body>
+</html>

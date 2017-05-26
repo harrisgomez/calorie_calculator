@@ -1,0 +1,25 @@
+<div class="container">
+    <div class="page-header">
+        <h1>Calorie Calculator</h1>
+    </div>
+
+    <div class="col-md-6">
+        <div class="form-group">
+            <label for="comment">Enter the foods you have eaten today:</label>
+            <textarea class="form-control" rows="5" ng-model='foods.name'></textarea>
+            <button type="button" class="btn btn-primary" ng-click='add()'>Add</button>
+        </div>
+    </div>
+
+    <div class="col-md-6">
+        <table>
+            <tr>
+                <td>Your food log contains:</td>
+            </tr>
+            <tr ng-repeat='result in results track by $index'>
+                <td>{{result.name}}</td>
+                <td>{{result.calories}}</td>
+            </tr>
+        </table>
+    </div>
+</div>
