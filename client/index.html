@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html>
+<html ng-app='calcApp'>
     <head>
         <meta charset="utf-8">
         <title>Calorie Calculator</title>
@@ -12,6 +12,7 @@
         <script>
             $(document).ready(function(){
                 $('#submit_food').submit(function(){
+                    console.log('hi');
                     var results = [];
                     var userInput = $('#foods').val();
 
@@ -22,7 +23,7 @@
                             var item = {};
                             $.ajax({
                                 type: 'GET',
-                                async: true,
+                                async: false,
                                 url: 'https://api.nutritionix.com/v1_1/search/' + lines[i] + '?fields=item_name%2Citem_id%2Cbrand_name%2Cnf_calories%2Cnf_total_fat&appId=be442dad&appKey=8304222f1be7fb9964787d2fe2770630',
                                 success: function(data){
                                     item.name = data.hits[0].fields.item_name;
