@@ -7,59 +7,87 @@
         <link rel="stylesheet" type='text/css' href="static/CSS/style.css">
         <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
         <script src="https://code.jquery.com/jquery-3.2.1.min.js" integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4=" crossorigin="anonymous"></script>
+        <!-- <script src="https://code.jquery.com/qunit/qunit-2.3.2.js"></script> -->
+        <!-- <script src='tests.js'></script> -->
         <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/jasmine/2.4.1/jasmine.css"></link>
         <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/jasmine/2.4.1/jasmine.js"></script>
         <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/jasmine/2.4.1/jasmine-html.js"></script>
         <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/jasmine/2.4.1/boot.js"></script>
 
         <script>
-            $(document).ready(function(){
-                var foods_eaten = [];
+            var foods_eaten = [];
 
-                $('#submit_food').submit(function(e){
+            subtract = function(){
+                return 1;
+            };
+
+            add = function(){
+                var total = 0;
+                for(var i=0; i<foods_eaten.length; i++){
+                    total += foods_eaten[i].calories;
+                }
+                $('#sum').text(total.toFixed(2));
+                // $('#sum').text(total);
+            };
+
+            add_to_list = function(results){
+                for(var i=0; i<results.length; i++){
+                    $('table tr:last').before(
+                        '<tr class="food_item"><td>' + results[i].name + '</td><td>' + results[i].calories + '</td></tr>'
+                    )
+                }
+            };
+
+            getResults = function(userInput){
+                var results = [];
+                var lines = userInput.split('\n'); // create separate searches for multi line inputs
+
+                for(var i=0; i<lines.length; i++){
+                    var item = {};
+                    $.ajax({
+                        type: 'GET',
+                        async: false,
+                        url: 'https://api.nutritionix.com/v1_1/search/' + lines[i] + '?fields=item_name%2Citem_id%2Cbrand_name%2Cnf_calories%2Cnf_total_fat&appId=61aa3b44&appKey=9e5e2895de5fa11ba6541135dbd01d19',
+                        success: function(data){
+                            item.name = data.hits[0].fields.item_name;
+                            item.calories = data.hits[0].fields.nf_calories;
+                            results.push(item);
+                        }
+                    })
+                };
+
+                for(var i=0; i<results.length; i++){
+                    foods_eaten.push(results[i]);
+                };
+
+                add_to_list(results);
+
+            };
+
+            $(document).ready(function(){
+
+                $('#submit_food').submit(function(){
                     var userInput = $('#foods').val();
 
-                    getResults = function(userInput){
-                        var results = [];
-                        var lines = userInput.split('\n'); // create separate searches for multi line inputs
-
-                        for(var i=0; i<lines.length; i++){
-                            var item = {};
-                            $.ajax({
-                                type: 'GET',
-                                async: false,
-                                url: 'https://api.nutritionix.com/v1_1/search/' + lines[i] + '?fields=item_name%2Citem_id%2Cbrand_name%2Cnf_calories%2Cnf_total_fat&appId=61aa3b44&appKey=9e5e2895de5fa11ba6541135dbd01d19',
-                                success: function(data){
-                                    item.name = data.hits[0].fields.item_name;
-                                    item.calories = data.hits[0].fields.nf_calories;
-                                    results.push(item);
-                                }
-                            })
-                        }
-
-                        for(var i=0; i<results.length; i++){
-                            foods_eaten.push(results[i]);
-                        }
-
-                        for(var i=0; i<foods_eaten.length; i++){
-                            $('table tr:last').before(
-                                '<tr class="food_item"><td>' + results[i].name + '</td><td>' + results[i].calories + '</td></tr>'
-                            )
-                        }
-
-                        var total = 0;
-
-                        for(var i=0; i<foods_eaten.length; i++){
-                            total += foods_eaten[i].calories;
-                        }
-
-                        $('#sum').text(total.toFixed(2));
-
-                        $('textarea').text('');
-                    }
-
                     getResults(userInput);
-                    e.preventDefault();
+                    add();
+                    $('textarea').val('');
+                    console.log(foods_eaten);
+                });
+            });
+
+            // JASMINE TESTING
+
+            describe('calorieCalculator', function(){
+                beforeEach(function(){
+                    foods_eaten = [{name: 'Coke, 16 oz', calories: '140'}, {name: 'Honey Cake - 1 cup', calories: '272.4'}]
+                })
+                it('should subtract', function(){
+                    expect(subtract()).toBe(1);
+                })
+                it('should add all the calories for foods listed', function(){
+                    add();
+                    expect(document.getElementById('sum')).innerHTML.toEqual('412.4');
                 })
             })
         </script>
@@ -74,7 +102,7 @@
 
             <div class="col-md-6">
                 <div class="form-group">
-                    <form id='submit_food'>
+                    <form id='submit_food' onsubmit='return false'>
                         <label for="foods">Enter the foods you have eaten today:</label>
                         <textarea id='foods' class="form-control" rows="5"></textarea>
                         <input type="submit" class="btn btn-primary" value='Add'>
@@ -93,7 +121,6 @@
                         <td id='sum'></td>
                     </tr>
                 </table>
-
             </div>
 
         </div>
