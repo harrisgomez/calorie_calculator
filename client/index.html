@@ -7,35 +7,26 @@
         <link rel="stylesheet" type='text/css' href="static/CSS/style.css">
         <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
         <script src="https://code.jquery.com/jquery-3.2.1.min.js" integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4=" crossorigin="anonymous"></script>
-        <!-- <script src="https://code.jquery.com/qunit/qunit-2.3.2.js"></script> -->
-        <!-- <script src='tests.js'></script> -->
+
+        <!-- JASMINE -->
         <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/jasmine/2.4.1/jasmine.css"></link>
         <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/jasmine/2.4.1/jasmine.js"></script>
         <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/jasmine/2.4.1/jasmine-html.js"></script>
         <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/jasmine/2.4.1/boot.js"></script>
+        <script type="text/javascript" src="jasmine.js">
+
+        </script>
 
         <script>
             var foods_eaten = [];
 
-            subtract = function(){
-                return 1;
-            };
-
             add = function(){
                 var total = 0;
                 for(var i=0; i<foods_eaten.length; i++){
-                    total += foods_eaten[i].calories;
+                    total += Number(foods_eaten[i].calories);
                 }
-                $('#sum').text(total.toFixed(2));
-                // $('#sum').text(total);
-            };
-
-            add_to_list = function(results){
-                for(var i=0; i<results.length; i++){
-                    $('table tr:last').before(
-                        '<tr class="food_item"><td>' + results[i].name + '</td><td>' + results[i].calories + '</td></tr>'
-                    )
-                }
+                console.log(total);
+                return total;
             };
 
             getResults = function(userInput){
@@ -57,10 +48,12 @@
                 };
 
                 for(var i=0; i<results.length; i++){
-                    foods_eaten.push(results[i]);
-                };
+                    $('table tr:last').before(
+                        '<tr class="food_item"><td>' + results[i].name + '</td><td>' + results[i].calories + '</td></tr>'
+                    )
+                }
 
-                add_to_list(results);
+                return results;
 
             };
 
@@ -68,28 +61,19 @@
 
                 $('#submit_food').submit(function(){
                     var userInput = $('#foods').val();
+                    var results = getResults(userInput);
 
-                    getResults(userInput);
-                    add();
+                    for(var i=0; i<results.length; i++){
+                        foods_eaten.push(results[i]);
+                    };
+
+                    $('#sum').text(parseFloat(add()).toFixed(2));
+
                     $('textarea').val('');
                     console.log(foods_eaten);
                 });
             });
 
-            // JASMINE TESTING
-
-            describe('calorieCalculator', function(){
-                beforeEach(function(){
-                    foods_eaten = [{name: 'Coke, 16 oz', calories: '140'}, {name: 'Honey Cake - 1 cup', calories: '272.4'}]
-                })
-                it('should subtract', function(){
-                    expect(subtract()).toBe(1);
-                })
-                it('should add all the calories for foods listed', function(){
-                    add();
-                    expect(document.getElementById('sum')).innerHTML.toEqual('412.4');
-                })
-            })
         </script>
 
     </head>
