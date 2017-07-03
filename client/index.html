@@ -28,16 +28,19 @@
                 return total;
             };
 
+            console.log({{id}});
+
             getResults = function(userInput){
                 var results = [];
                 var lines = userInput.split('\n'); // create separate searches for multi line inputs
 
                 for(var i=0; i<lines.length; i++){
                     var item = {};
+
                     $.ajax({
                         type: 'GET',
                         async: false,
-                        url: 'https://api.nutritionix.com/v1_1/search/' + lines[i] + '?fields=item_name%2Citem_id%2Cbrand_name%2Cnf_calories%2Cnf_total_fat&appId=61aa3b44&appKey=9e5e2895de5fa11ba6541135dbd01d19',
+                        url: 'https://api.nutritionix.com/v1_1/search/' + lines[i] + '?fields=item_name%2Citem_id%2Cbrand_name%2Cnf_calories%2Cnf_total_fat&appId=' + app_id,
                         success: function(data){
                             item.name = data.hits[0].fields.item_name;
                             item.calories = data.hits[0].fields.nf_calories;

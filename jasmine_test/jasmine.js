@@ -16,7 +16,7 @@ describe('calorieCalculator', function(){
                         Honey Cake - 1 cup
                         Milk Chocolate Flavored Candy Bites`;
 
-        expect(getResults(fake_userInput)).toEqual(jasmine.any(Object));
+        expect(getResults(fake_userInput)).toEqual(jasmine.any(Object)); // jasmine compares to type-Object
         expect(getResults(fake_userInput).length).toEqual(3);
         $('.food_item').remove(); // clears tested food items from food log
     });
